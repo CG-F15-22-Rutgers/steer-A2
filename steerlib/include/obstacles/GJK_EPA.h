@@ -10,9 +10,12 @@
 
 
 #include "util/Geometry.h"
+#include <utility>
+#include <cmath>	
 
-
+#include <algorithm>
 #include <vector>
+#include <tuple>
 
 
 namespace SteerLib
@@ -128,7 +131,22 @@ namespace SteerLib
              */
             static bool intersect(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB);
 
+			static std::vector<Util::Vector> A_min_B(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB);
+			static std::vector<std::pair<float,Util::Vector>> shortest_projection(std::vector<Util::Vector>& W, Util::Vector& v);
+			static bool triangle_contain_point(std::vector<Util::Vector>& W, Util::Vector& v);
+			static int sign(float val);
+			static float determinant(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			static std::tuple<Util::Vector,float,Util::Vector> shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v);
+			static float dist(Util::Vector& a, Util::Vector& b);
+			static std::pair<Util::Vector, float> ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			static std::tuple<Util::Vector, float, Util::Vector, Util::Vector> ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			static std::vector<std::pair<float,Util::Vector>> projection(std::vector<Util::Vector>& W, Util::Vector& v);
+			
+			static bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
+			static std::pair<float,Util::Vector> EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
         private:
+			
+			
 
     }; // class GJK_EPA
 
