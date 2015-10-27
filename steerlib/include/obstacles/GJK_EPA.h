@@ -10,8 +10,10 @@
 
 
 #include "util/Geometry.h"
+#include <utility>
+#include <cmath>	
 
-
+#include <algorithm>
 #include <vector>
 
 
@@ -128,7 +130,22 @@ namespace SteerLib
              */
             static bool intersect(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB);
 
+			std::vector<Util::Vector> A_min_B(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB);
+			std::vector<std::pair<float,Util::Vector>> shortest_projection(std::vector<Util::Vector>& W, Util::Vector& v);
+			bool triangle_contain_point(std::vector<Util::Vector>& W, Util::Vector& v);
+			int sign(float val);
+			float determinant(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			Util::Vector shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v);
+			float dist(Util::Vector& a, Util::Vector& b);
+			void ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			void ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			std::vector<std::pair<float,Util::Vector>> projection(std::vector<Util::Vector>& W, Util::Vector& v);
+			
+			bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
+			void EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
         private:
+			
+			
 
     }; // class GJK_EPA
 
