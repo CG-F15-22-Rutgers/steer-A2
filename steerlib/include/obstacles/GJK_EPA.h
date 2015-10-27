@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <tuple>
 
 
 namespace SteerLib
@@ -135,14 +136,14 @@ namespace SteerLib
 			bool triangle_contain_point(std::vector<Util::Vector>& W, Util::Vector& v);
 			int sign(float val);
 			float determinant(Util::Vector& a, Util::Vector& b, Util::Vector& c);
-			Util::Vector shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v);
+			std::tuple<Util::Vector,float,Util::Vector> shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v);
 			float dist(Util::Vector& a, Util::Vector& b);
-			void ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c);
-			void ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			std::pair<Util::Vector, float> ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			std::tuple<Util::Vector, float, Util::Vector, Util::Vector> ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c);
 			std::vector<std::pair<float,Util::Vector>> projection(std::vector<Util::Vector>& W, Util::Vector& v);
 			
 			bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
-			void EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
+			std::pair<float,std::vector<Util::Vector>> EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
         private:
 			
 			

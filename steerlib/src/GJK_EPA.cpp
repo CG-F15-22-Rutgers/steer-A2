@@ -46,13 +46,14 @@ bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std:
 			while(std::find(simplex.begin(), simplex.end(), std::get<1>(temp[i])) != simplex.end())
 				i++;
 			simplex.push_back(std::get<1>(temp[i]));
-			auto temp2 = this->shortest_projection2(simplex, origin);
+			std::tuple<Util::Vector, float, Util::Vector> temp2;
+			temp2 = this->shortest_projection2(simplex, origin);
 			v = std::get<0>(temp2);
 		}
 		else if (simplex.size() > 2)
 		{
-			float u = std::get<1>(temp[0])*v/v.length;
-			close_enough = std::abs((std::abs(u)-v.length)) < error0 ;
+			float u = std::get<1>(temp[0])*v/v.length();
+			close_enough = std::abs((std::abs(u)-v.length())) < error0 ;
 			if(this->triangle_contain_point(simplex, origin))//check if convex hull of W contain origin
 				return true;
 			if(!close_enough)
@@ -90,6 +91,28 @@ std::vector<std::pair<float,Util::Vector>> SteerLib::GJK_EPA::projection(std::ve
 	return temp;
 }
 
+
+std::tuple<Util::Vector,float,Util::Vector> SteerLib::GJK_EPA::shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v)
+{
+	Util::Vector a,b,c, origin;
+	a = W[0];
+	b = W[1];
+	c = W[2];
+	std::vector<std::tuple<Util::Vector,float,Util::Vector>> temp; // 1st element is the projection point, 2nd is orthogonal distance, 3rd is the point to remove
+	temp.push_back(std::make_tuple(this->ortho_projection_point(a, b, origin),c));
+	temp.push_back(std::make_tuple(this->ortho_projection_point(b, c, origin),a));
+	temp.push_back(std::make_tuple(this->ortho_projection_point(c, a, origin),b));
+	temp.push_back(std::make_tuple(a,dist(a, origin), b));
+	temp.push_back(std::make_tuple(b,dist(b, origin), c));
+	temp.push_back(std::make_tuple(c,dist(c, origin), a));
+	std::sort(temp.begin(), temp.end(), [](auto &a, auto &b){return std::get<1>(a) < std::get<1>(b)});
+	int n=0;
+	while (!this->triangle_contain_point(W, std::get<0>(temp[n])))
+		n++;
+	return temp[n];
+	
+}
+
 bool SteerLib::GJK_EPA::triangle_contain_point(std::vector<Util::Vector>& W, Util::Vector& v)
 {
 	Util::Vector a,b,c;
@@ -113,33 +136,12 @@ float SteerLib::GJK_EPA::determinant(Util::Vector& a, Util::Vector& b, Util::Vec
 	return (a.x*b.z+a.z*c.x+b.x*c.z-a.x*c.z-a.z*b.x-b.z*c.x);
 }
 
-Util::Vector SteerLib::GJK_EPA::shortest_projection2(std::vector<Util::Vector>& W, Util::Vector& v)
-{
-	Util::Vector a,b,c, origin;
-	a = W[0];
-	b = W[1];
-	c = W[2];
-	std::vector< std::pair<Util::Vector,float,Util::Vector> > temp; // 1st element is the projection point, 2nd is orthogonal distance, 3rd is the point to remove
-	temp.push_back(std::make_pair(this->ortho_projection_point(a, b, origin),c));
-	temp.push_back(std::make_pair(this->ortho_projection_point(b, c, origin),a));
-	temp.push_back(std::make_pair(this->ortho_projection_point(c, a, origin),b));
-	temp.push_back(std::make_pair(a,dist(a, origin), b));
-	temp.push_back(std::make_pair(b,dist(b, origin), c));
-	temp.push_back(std::make_pair(c,dist(c, origin), a));
-	std::sort(temp.begin(), temp.end(), [](auto &a, auto &b){return std::get<1>(a) < std::get<1>(b)});
-	int n=0;
-	while (!this->triangle_contain_point(W, std::get<0>(temp[n])))
-		n++;
-	return temp[n];
-	
-}
-
 float SteerLib::GJK_EPA::dist(Util::Vector& a, Util::Vector& b)
 {
 	return(pow(a.x-b.x, 2)+pow(a.z-b.z,2));
 }
 
-void SteerLib::GJK_EPA::ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c)
+std::pair<Util::Vector, float> SteerLib::GJK_EPA::ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c)
 {
 	float t = - ((a.x-c.x)*(b.x-a.x) + (a.z-c.z)(b.z-a.z))/((b.x-a.x)*(b.x-a.x) + (b.z-a.z)*(b.z-a.z));
 	Util::Vector u = (t*b.x+(1.0f-t)*a.x ,0.0f, t*b.z+(1.0f-t)*a.z);
@@ -147,12 +149,12 @@ void SteerLib::GJK_EPA::ortho_projection_point(Util::Vector& a, Util::Vector& b,
 	return std::make_pair(u, len_square);
 }
 
-void SteerLib::GJK_EPA::ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c)
+std::tuple<Util::Vector, float, Util::Vector, Util::Vector> SteerLib::GJK_EPA::ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c)
 {
 	float t = - ((a.x-c.x)*(b.x-a.x) + (a.z-c.z)(b.z-a.z))/((b.x-a.x)*(b.x-a.x) + (b.z-a.z)*(b.z-a.z));
 	Util::Vector u = (t*b.x+(1.0f-t)*a.x-c.x ,0.0f, t*b.z+(1.0f-t)*a.z-c.z);
 	float len_square = pow(t*(b.x-a.x)+a.x-c.x, 2) + pow(t*(b.z-a.z)+a.z-c.z, 2);
-	return std::make_pair(u, len_square, a, b);
+	return std::make_tuple(u, len_square, a, b);
 }
 
 std::vector<Util::Vector> SteerLib::GJK_EPA::A_min_B(std::vector<Util::Vector>& _shapeA, std::vector<Util::Vector>& _shapeB)
@@ -169,15 +171,15 @@ std::vector<Util::Vector> SteerLib::GJK_EPA::A_min_B(std::vector<Util::Vector>& 
 }
 
 
-void SteerLib::GJK_EPA::EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex)
+std::pair<float,std::vector<Util::Vector>>  SteerLib::GJK_EPA::EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex)
 {
 	Util::Vector origin, a, b, c;
 	std::vector<Util::Vector> A_minus_B = this->A_min_B(_shapeA, _shapeB);
 	a = simplex[0];
 	b = simplex[1];
 	c = simplex[2];
-	std::vector<std::make_pair(Util::Vector, float, Util::Vector, Util::Vector)> queue;
-	std::pair(Util::Vector, float, Util::Vector, Util::Vector) min;
+	std::vector<std::make_tuple(Util::Vector, float, Util::Vector, Util::Vector)> queue;
+	std::tuple(Util::Vector, float, Util::Vector, Util::Vector) min;
 
 	queue.insert( this->ortho_projection_point2(a, b, origin));
 	queue.insert( this->ortho_projection_point2(b, c, origin));
@@ -195,7 +197,7 @@ void SteerLib::GJK_EPA::EPA(const std::vector<Util::Vector>& _shapeA, const std:
 		
 		auto temp = this->projection(A_minus_B, dir);
 		Util::Vector expand_node = std::get<1>(temp[0]);
-		float len2 = pow(std::get<0>(temp[0])/dir.length, 2);
+		float len2 = pow(std::get<0>(temp[0])/dir.length(), 2);
 		converge = (len2 - len1 < 0.00001f);
 		if(converge)
 		{
