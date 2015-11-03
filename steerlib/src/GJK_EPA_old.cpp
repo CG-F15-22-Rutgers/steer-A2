@@ -75,7 +75,7 @@ bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std:
 			float u = std::get<1>(temp[0])*v/v.length();
 			
 			close_enough = std::abs((std::abs(u)-v.length())) < error0 ;
-			if (triangle_contain_point(simplex, origin))//check if convex hull of W contain origin
+			if (triangle_contain_point_2(simplex, origin))//check if convex hull of W contain origin
 			{
 				//cout << "oky" << endl;
 				return true;
@@ -149,7 +149,7 @@ std::tuple<Util::Vector,float,Util::Vector> SteerLib::GJK_EPA::shortest_projecti
 		cout << get<0>(temp[i]).x << " " << get<0>(temp[i]).z << " length:" << get<1>(temp[i]) << endl;
 	}*/
 
-	while (!triangle_contain_point(W, std::get<0>(temp[n])))
+	while (!triangle_contain_point_2(W, std::get<0>(temp[n])))
 	{
 		//std::cout << "point not in the triangle:"<<std::endl;
 		//std::cout << get<0>(temp[n]).x << " " << get<0>(temp[n]).z << endl;
