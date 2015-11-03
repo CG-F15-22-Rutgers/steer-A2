@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b0694301286860242abe687dde768ed2f7f7e634
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -41,3 +45,47 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+<<<<<<< HEAD
+=======
+=======
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Release or Debug folders
+**/[rR]elease/
+**/[dD]ebug/
+**/.vs/
+**/x64/
+**/x86/
+
+# SDF files
+**/*.opensdf
+**/*.sdf
+>>>>>>> 241871090411e4f7f45e75e5e00bee754a791f29
+>>>>>>> b0694301286860242abe687dde768ed2f7f7e634
