@@ -142,11 +142,19 @@ namespace SteerLib
 			static float dist(Util::Vector& a, Util::Vector& b);
 			static std::pair<Util::Vector, float> ortho_projection_point(Util::Vector& a, Util::Vector& b, Util::Vector& c);
 			static std::tuple<Util::Vector, float, Util::Vector, Util::Vector> ortho_projection_point2(Util::Vector& a, Util::Vector& b, Util::Vector& c);
+			static std::pair<Util::Vector, float> ortho_projection_point3(Util::Vector& a, Util::Vector& b, Util::Vector& c);
 			static std::vector<std::pair<float,Util::Vector>> projection(std::vector<Util::Vector>& W, Util::Vector& v);
-			static std::vector<std::pair<float, Util::Vector>> projection2(std::vector<Util::Vector>& W, Util::Vector& v);
+	
+			static std::vector<Util::Vector> QuickHull(std::vector<Util::Vector> W);
+			static void lower(Util::Vector A, Util::Vector B, std::vector<Util::Vector> L, std::vector<Util::Vector>& CovxHull);
+			static void upper(Util::Vector A, Util::Vector B, std::vector<Util::Vector> U, std::vector<Util::Vector>& CovxHull);
+
+			static void earclipping(std::vector<std::vector<Util::Vector>>& triangle_list, std::vector<Util::Vector> pts);
+			static std::vector<std::vector<Util::Vector>> triangulation(std::vector<Util::Vector> pts);
 			
 			static bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
 			static std::pair<float,Util::Vector> EPA(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
+			static bool intersect_for_convex(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB);
         private:
 			
 			
