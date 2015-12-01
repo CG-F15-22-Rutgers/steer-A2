@@ -543,6 +543,9 @@ bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector&
 		std::vector<std::vector<Util::Vector>> triangle_list_A, triangle_list_B;
 		triangle_list_A = triangulation(_shapeA);
 		triangle_list_B = triangulation(_shapeB);
+		int size_A = triangle_list_A.size();
+		int size_B = triangle_list_B.size();
+		std::cout << "concave polygon detected, A is decomposed into " << size_A << " parts and B is decomposed into " << size_B << " parts" <<  std::endl;
 		//std::cout << "decomp finished" << std::endl;
 		//std::cout << "A original" << std::endl;
 		//for (auto i = _shapeA.begin(); i != _shapeA.end(); i++)
@@ -565,11 +568,12 @@ bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector&
 		//	std::cout << (*i)[1].x << " " << (*i)[1].z << std::endl;
 		//	std::cout << (*i)[2].x << " " << (*i)[2].z << std::endl;
 		//}
+		bool flag = false;
 		for (auto i = triangle_list_A.begin(); i != triangle_list_A.end(); i++)
 			for (auto j = triangle_list_B.begin(); j != triangle_list_B.end(); j++)
 			{
-				is_colliding = GJK((*i), (*j), simplex);
 				simplex.clear();
+				is_colliding = GJK((*i), (*j), simplex);
 				//std::cout << "GJK finished" << std::endl;
 				if (is_colliding == true)
 				{
@@ -581,13 +585,21 @@ bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector&
 					//std::cout << (*j)[0].x << " " << (*j)[0].z << std::endl;
 					//std::cout << (*j)[1].x << " " << (*j)[1].z << std::endl;
 					//std::cout << (*j)[2].x << " " << (*j)[2].z << std::endl;
+					return_penetration_depth = std::get<0>(EPA((*i), (*j), simplex));
+					return_penetration_vector = std::get<1>(EPA((*i), (*j), simplex));
+					int num_i = i - triangle_list_A.begin() + 1;
+					int num_j = j - triangle_list_B.begin() + 1;
+					std::cout << "penetration_depth is" << return_penetration_depth << "and penetration_vector is (" << return_penetration_vector.x << ", 0.0f, " << return_penetration_vector.z <<") for part " << num_i << "in A and part "<< num_j << "in B" <<std::endl;
+					flag = true;
+				}
+				if (flag == true)
+				{
 					return_penetration_depth = 0.0f;
 					return_penetration_vector = Util::Vector(0.0f, 0.0f, 0.0f);
-					std::cout << "i dont know how to extend EPA to concave polygons" << std::endl;
 					return true;
 				}
 			}
-		std::cout << "no collision" << std::endl;
+		//std::cout << "no collision" << std::endl;
 		return false;
 	}
 	else
